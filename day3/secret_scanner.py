@@ -2,6 +2,7 @@
 import os
 import re
 import sys
+from collections.abc import Iterator
 from pathlib import Path
 
 PATTERNS: dict[str, re.Pattern] = {}
@@ -17,7 +18,7 @@ def scan_file(path: Path) -> list[Finding]:
     raise NotImplementedError
 
 
-def walk_directory(root: Path):
+def walk_directory(root: Path) -> Iterator[Path]:
     raise NotImplementedError
 
 

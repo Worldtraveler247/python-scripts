@@ -85,6 +85,7 @@ def main() -> None:
         print("No secrets found.")
 
     print(f"\nFiles scanned: {files_scanned}  |  Findings: {len(all_findings)}")
+    sys.exit(1 if all_findings else 0)
 
 
 if __name__ == "__main__":

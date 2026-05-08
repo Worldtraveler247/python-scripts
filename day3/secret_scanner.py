@@ -1,4 +1,5 @@
 # day3/secret_scanner.py
+import os
 import re
 import sys
 from collections.abc import Iterator
@@ -51,10 +52,10 @@ def scan_file(path: Path) -> list[Finding]:
 
 
 def walk_directory(root: Path) -> Iterator[Path]:
-    for dirpath, dirnames, filenames in root.walk():
+    for dirpath, dirnames, filenames in os.walk(root):
         dirnames[:] = [d for d in dirnames if d not in SKIP_DIRS]
         for filename in filenames:
-            p = dirpath / filename
+            p = Path(dirpath) / filename
             if p.suffix in SCAN_EXTENSIONS and not p.is_symlink():
                 yield p
 

@@ -53,9 +53,26 @@ def test_scan_file_permission_error_warns_and_returns_empty(
 ) -> None:
     f = tmp_path / "secret.env"
     f.write_text("password=secret\n")
+    # Unix only: chmod 000 blocks reads; this test will not work on Windows or as root
     f.chmod(0o000)
     findings = scan_file(f)
     assert findings == []
     captured = capsys.readouterr()
     assert "[WARN]" in captured.err
     f.chmod(0o644)  # restore so tmp_path cleanup works
+
+
+def test_scan_file_finds_api_key(tmp_path: Path) -> None:
+    f = tmp_path / "config.env"
+    f.write_text('api_key = "sk-abc123xyz789"\n')
+    findings = scan_file(f)
+    assert len(findings) == 1
+    assert findings[0][0] == "Generic API Key"
+
+
+def test_scan_file_finds_token(tmp_path: Path) -> None:
+    f = tmp_path / "config.env"
+    f.write_text('token = "ghp_abc123xyz789"\n')
+    findings = scan_file(f)
+    assert len(findings) == 1
+    assert findings[0][0] == "Generic Token/Secret"

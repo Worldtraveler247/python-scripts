@@ -1,23 +1,22 @@
 # day3/secret_scanner.py
-import os
 import re
 import sys
 from collections.abc import Iterator
 from pathlib import Path
 
-PATTERNS: dict[str, re.Pattern] = {
-    "AWS Access Key ID": re.compile(r"AKIA[0-9A-Z]{16}"),
+PATTERNS: dict[str, re.Pattern[str]] = {
+    "AWS Access Key ID": re.compile(r"\bAKIA[0-9A-Z]{16}\b"),
     "AWS Secret Access Key": re.compile(
-        r"(?i)aws.{0,20}secret.{0,20}[=:]\s*['\"]?([A-Za-z0-9/+=]{40})['\"]?"
+        r"(?i)aws.{0,20}secret.{0,20}[=:]\s*['\"]?(?:[A-Za-z0-9/+=]{40})['\"]?"
     ),
     "Generic Password": re.compile(
-        r"(?i)(password|passwd|pwd)\s*[=:]\s*['\"]?\S+"
+        r"(?i)(password|passwd|pwd)\s*[=:]\s*['\"]?(\S{8,})"
     ),
     "Generic API Key": re.compile(
-        r"(?i)(api_key|apikey|api-key)\s*[=:]\s*['\"]?\S+"
+        r"(?i)(api_key|apikey|api-key)\s*[=:]\s*['\"]?(\S{8,})"
     ),
     "Generic Token/Secret": re.compile(
-        r"(?i)(token|secret|auth)\s*[=:]\s*['\"]?\S+"
+        r"(?i)(token|secret|auth)\s*[=:]\s*['\"]?(\S{8,})"
     ),
     "Private Key Header": re.compile(
         r"-----BEGIN (RSA |EC |DSA |OPENSSH )?PRIVATE KEY-----"

@@ -11,13 +11,13 @@ PATTERNS: dict[str, re.Pattern[str]] = {
         r"(?i)aws.{0,20}secret.{0,20}[=:]\s*['\"]?(?:[A-Za-z0-9/+=]{40})['\"]?"
     ),
     "Generic Password": re.compile(
-        r"(?i)(password|passwd|pwd)\s*[=:]\s*['\"]?(\S{8,})"
+        r"(?i)(password|passwd|pwd)['\"]?\s*[=:]\s*['\"]?(\S{8,})"
     ),
     "Generic API Key": re.compile(
-        r"(?i)(api_key|apikey|api-key)\s*[=:]\s*['\"]?(\S{8,})"
+        r"(?i)(api_key|apikey|api-key)['\"]?\s*[=:]\s*['\"]?(\S{8,})"
     ),
     "Generic Token/Secret": re.compile(
-        r"(?i)(token|secret|auth)\s*[=:]\s*['\"]?(\S{8,})"
+        r"(?i)(token|secret|auth)['\"]?\s*[=:]\s*['\"]?(\S{8,})"
     ),
     "Private Key Header": re.compile(
         r"-----BEGIN (RSA |EC |DSA |OPENSSH )?PRIVATE KEY-----"

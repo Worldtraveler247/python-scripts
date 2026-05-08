@@ -61,7 +61,30 @@ def walk_directory(root: Path) -> Iterator[Path]:
 
 
 def main() -> None:
-    raise NotImplementedError
+    if len(sys.argv) != 2:
+        print("Usage: python3 secret_scanner.py <directory>")
+        sys.exit(1)
+
+    root = Path(sys.argv[1])
+    if not root.is_dir():
+        print(f"Error: '{root}' is not a directory")
+        sys.exit(1)
+
+    all_findings: list[Finding] = []
+    files_scanned = 0
+
+    for file_path in walk_directory(root):
+        files_scanned += 1
+        all_findings.extend(scan_file(file_path))
+
+    for category, path, line_num, line_text in all_findings:
+        truncated = line_text[:120]
+        print(f"[{category}] {path}:{line_num}: {truncated}")
+
+    if not all_findings:
+        print("No secrets found.")
+
+    print(f"\nFiles scanned: {files_scanned}  |  Findings: {len(all_findings)}")
 
 
 if __name__ == "__main__":

@@ -107,3 +107,31 @@ def test_walk_directory_skips_symlinks(tmp_path: Path) -> None:
     paths = list(walk_directory(tmp_path))
     assert real in paths
     assert link not in paths
+
+
+def test_walk_directory_skips_nested_skip_dirs(tmp_path: Path) -> None:
+    src = tmp_path / "src"
+    src.mkdir()
+    pycache = src / "__pycache__"
+    pycache.mkdir()
+    cachefile = pycache / "module.py"  # .py would match if not pruned
+    cachefile.write_text("x = 1\n")
+    real = src / "app.py"
+    real.write_text("x = 1\n")
+    paths = list(walk_directory(tmp_path))
+    assert real in paths
+    assert cachefile not in paths
+
+
+def test_walk_directory_empty_dir_returns_no_paths(tmp_path: Path) -> None:
+    assert list(walk_directory(tmp_path)) == []
+
+
+def test_walk_directory_skips_extensionless_files(tmp_path: Path) -> None:
+    makefile = tmp_path / "Makefile"
+    makefile.write_text("TOKEN=supersecretvalue\n")
+    py_file = tmp_path / "app.py"
+    py_file.write_text("x = 1\n")
+    paths = list(walk_directory(tmp_path))
+    assert py_file in paths
+    assert makefile not in paths

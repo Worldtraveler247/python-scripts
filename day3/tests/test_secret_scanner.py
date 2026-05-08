@@ -76,3 +76,34 @@ def test_scan_file_finds_token(tmp_path: Path) -> None:
     findings = scan_file(f)
     assert len(findings) == 1
     assert findings[0][0] == "Generic Token/Secret"
+
+
+def test_walk_directory_skips_skip_dirs(tmp_path: Path) -> None:
+    git_dir = tmp_path / ".git"
+    git_dir.mkdir()
+    (git_dir / "config").write_text("password=secret\n")
+    normal = tmp_path / "app.py"
+    normal.write_text("x = 1\n")
+    paths = list(walk_directory(tmp_path))
+    assert normal in paths
+    assert (git_dir / "config") not in paths
+
+
+def test_walk_directory_filters_to_scan_extensions(tmp_path: Path) -> None:
+    py_file = tmp_path / "app.py"
+    py_file.write_text("x = 1\n")
+    pdf_file = tmp_path / "report.pdf"
+    pdf_file.write_text("not scanned\n")
+    paths = list(walk_directory(tmp_path))
+    assert py_file in paths
+    assert pdf_file not in paths
+
+
+def test_walk_directory_skips_symlinks(tmp_path: Path) -> None:
+    real = tmp_path / "real.py"
+    real.write_text("x = 1\n")
+    link = tmp_path / "link.py"
+    link.symlink_to(real)
+    paths = list(walk_directory(tmp_path))
+    assert real in paths
+    assert link not in paths

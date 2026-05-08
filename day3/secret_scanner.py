@@ -1,4 +1,5 @@
 # day3/secret_scanner.py
+import os
 import re
 import sys
 from collections.abc import Iterator
@@ -51,7 +52,13 @@ def scan_file(path: Path) -> list[Finding]:
 
 
 def walk_directory(root: Path) -> Iterator[Path]:
-    raise NotImplementedError
+    for dirpath, dirnames, filenames in os.walk(root):
+        # Prune in-place so os.walk does not descend into skipped dirs
+        dirnames[:] = [d for d in dirnames if d not in SKIP_DIRS]
+        for filename in filenames:
+            p = Path(dirpath) / filename
+            if p.suffix in SCAN_EXTENSIONS and not p.is_symlink():
+                yield p
 
 
 def main() -> None:
